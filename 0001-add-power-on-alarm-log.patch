@@ -1,0 +1,42 @@
+From 04216094d4b55cfba965b667a512e9ea3e411fa3 Mon Sep 17 00:00:00 2001
+From: zhangbo <zhangbo@bogon.DHCP>
+Date: Tue, 19 Dec 2017 22:32:52 +0800
+Subject: [PATCH] add power on alarm log
+
+Change-Id: I486f0f7feb3bc8907e6077ed3eec07b6bbe9347b
+---
+ fs/timerfd.c             | 4 ++++
+ kernel/time/alarmtimer.c | 2 ++
+ 2 files changed, 6 insertions(+)
+
+diff --git a/fs/timerfd.c b/fs/timerfd.c
+index 31374ec8f9bd..9069b5ac79be 100644
+--- a/fs/timerfd.c
++++ b/fs/timerfd.c
+@@ -488,6 +488,10 @@ static int do_timerfd_settime(int ufd, int flags,
+ 
+ 	spin_unlock_irq(&ctx->wqh.lock);
+ 
++	if (new->it_value.tv_sec > 5 || new->it_interval.tv_sec > 5)
++		pr_info("%s: clockid = %d it_value.tv_sec = %ld it_interval.tv_sec = %ld\n",
++			__func__, ctx->clockid, ctx->it_tv_sec, ctx->it_interval);
++
+ 	if (ctx->clockid == CLOCK_POWEROFF_ALARM)
+ 		set_power_on_alarm();
+ 
+diff --git a/kernel/time/alarmtimer.c b/kernel/time/alarmtimer.c
+index 47d256ff51ec..a913ef7f31f4 100644
+--- a/kernel/time/alarmtimer.c
++++ b/kernel/time/alarmtimer.c
+@@ -147,6 +147,8 @@ void set_power_on_alarm(void)
+ 	alarm_delta = wall_time.tv_sec - rtc_secs;
+ 	alarm_time = alarm_secs - alarm_delta;
+ 
++	pr_info("%s: alarm_delta = %ld\n", __func__, alarm_delta);
++
+ 	rtc_time_to_tm(alarm_time, &alarm.time);
+ 	alarm.enabled = 1;
+ 	rc = rtc_set_alarm(rtcdev, &alarm);
+-- 
+2.14.3
+
