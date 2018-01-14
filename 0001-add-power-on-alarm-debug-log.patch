@@ -1,16 +1,15 @@
-From 04216094d4b55cfba965b667a512e9ea3e411fa3 Mon Sep 17 00:00:00 2001
-From: zhangbo <zhangbo@bogon.DHCP>
-Date: Tue, 19 Dec 2017 22:32:52 +0800
-Subject: [PATCH] add power on alarm log
+From e4bf129ab6e34818981f44aee5f6d44dfc248147 Mon Sep 17 00:00:00 2001
+From: zhangbo <zbsdta@126.com>
+Date: Sat, 13 Jan 2018 20:03:33 +0800
+Subject: [PATCH] add power on alarm debug log
 
-Change-Id: I486f0f7feb3bc8907e6077ed3eec07b6bbe9347b
 ---
  fs/timerfd.c             | 4 ++++
  kernel/time/alarmtimer.c | 2 ++
  2 files changed, 6 insertions(+)
 
 diff --git a/fs/timerfd.c b/fs/timerfd.c
-index 31374ec8f9bd..9069b5ac79be 100644
+index 31374ec8f9bd..d623ef1f0a5b 100644
 --- a/fs/timerfd.c
 +++ b/fs/timerfd.c
 @@ -488,6 +488,10 @@ static int do_timerfd_settime(int ufd, int flags,
@@ -19,7 +18,7 @@ index 31374ec8f9bd..9069b5ac79be 100644
  
 +	if (new->it_value.tv_sec > 5 || new->it_interval.tv_sec > 5)
 +		pr_info("%s: clockid = %d it_value.tv_sec = %ld it_interval.tv_sec = %ld\n",
-+			__func__, ctx->clockid, ctx->it_tv_sec, ctx->it_interval);
++			__func__, ctx->clockid, new->it_value.tv_sec, new->it_interval.tv_sec);
 +
  	if (ctx->clockid == CLOCK_POWEROFF_ALARM)
  		set_power_on_alarm();
